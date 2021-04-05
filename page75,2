@@ -1,0 +1,180 @@
+#include<stdio.h>
+#include <malloc.h>
+
+//P74,实验2.
+typedef char ElemType;
+typedef struct linklist {
+	ElemType Data;
+	struct linklist* next;
+}Link_List;
+
+//(1)初始化单链表。
+void InitList(Link_List*& h) {
+	h = (Link_List*)malloc(sizeof(Link_List));//创建头指针。
+	h->next = NULL;
+}
+
+//(2)依次采用尾插法插入abcde,元素。
+void Create_Tail(Link_List*& h, ElemType a[], int n) {
+	Link_List* s, * r;
+	h = (Link_List*)malloc(sizeof(Link_List));
+	r = h;//让r一直指向尾。
+	for (int i = 0; i < n; i++) {
+		s = (Link_List*)malloc(sizeof(Link_List));
+		s->Data = a[i];
+		r->next = s;//r本来是指向尾的，这样就把s放到了r的后面。
+		r = s;//再把r和s换，又让r指向了最后。
+	} 
+	r->next = NULL;//最后把尾指针指向null。
+}
+
+//（3）输出单链表。
+void DispList(Link_List* h) {
+	Link_List* p = h->next;
+	while (p != NULL) {
+		printf("%c\t", p->Data);
+		p = p->next;
+	}
+	printf("\n");
+}
+
+//(4)输出单链表的长度、
+int Length_List(Link_List* h) {
+	Link_List* p = h;
+	int count = 0;
+	while (p!=NULL)
+	{
+		count++;
+		p = p->next;
+	}
+	return(count);
+}
+
+//(5)判断单链表是否为空、
+int Empty_List(Link_List* h) {
+	Link_List* p = h->next;
+	return(p == NULL);
+}
+
+//(6)输出单链表h的第(i)三个元素。
+bool Output_Element(Link_List* h, int i,ElemType &temp) {//i为第i位，用&temp存找出来的元素。
+	Link_List* p = h;
+	int j = 0;
+	if (i <= 0) {
+		return false;
+	}
+	while (j < i && p->next != NULL) {
+		j++;
+		p = p->next;
+	}
+	if (p == NULL) {
+		return false;
+	}
+	else {
+		temp = p->Data;
+		return true;
+	}
+}
+
+//（7）输出元素a的位置
+int Output_Location(Link_List* h, ElemType a) {
+	int i=0;
+	Link_List* p = h->next;
+	while (p != NULL && p->Data != a) {//这个题和上面6的思路一样的
+		i++;
+		p = p->next;
+	}
+	if (p == NULL) {
+		return 0;
+	}
+	else {
+		return i;
+	}
+}
+
+//(8)在第4（i）个元素位置上插入f。
+bool Insert_List(Link_List* &h, int i, ElemType f) {
+	int j = 0;
+	Link_List* p = h, * s;
+	if (i <= 0) {
+		return false;
+	}
+	while (j < i - 1 && p != NULL) {
+		j++;
+		p = p->next;
+	}
+	if (p == NULL) {
+		return false;
+	}
+	else {
+		s = (Link_List*)malloc(sizeof(Link_List));
+		s->Data = f;
+		s->next = p->next;
+		p->next = s;
+		return true;
+	}
+}
+
+//（9）输出单链表和（3）同理，略。
+
+//（10）删除单链表h的第（i)3个元素。
+bool Delete_List(Link_List*& h, int i, ElemType& tp) {
+	int j = 0;
+	Link_List* p = h, * q;
+	if (i <= 0) {
+		return false;
+	}
+	while (j < i - 1 && p != NULL) {
+		j++;
+		p = p->next;//和上面一样，都是为地址往后移动刚刚到i.
+	}
+	if (p == NULL) {
+		return false;
+	}
+	else {
+		q = p->next;//先用q把找到的这个地址，节点个保存下来，方便一下和后面的连，不断。
+		if (q == NULL) {
+			return false;
+		}
+		tp = q->Data;//把删除的这个数据传回去。
+		p->next = q->next;//先把q这个位置指向的地址给p的指针域，这样链表才不断呀。
+		free(q);
+		return true;
+	}
+
+}
+
+//（11）输出h.还是和（3）一样。略
+
+//(12)释放单链表。
+void Release_List(Link_List*& h) {
+	Link_List* pre = h,*p=h->next;
+	while (p != NULL) {
+		free(pre);
+		pre = p;
+		p = pre->next;//从头开始释放的，
+	}
+	free(pre);
+}
+
+int main654958() {
+	ElemType a[] = { 'a','b','c','d','e' };
+	ElemType temp = 'null', f = 'f', tp = 'null';
+	Link_List* h;
+	InitList(h);
+	Create_Tail(h, a, 5);
+	DispList(h);
+	Length_List(h);
+	Empty_List(h);
+	Output_Element(h, 3, temp);
+	Output_Location(h, a[0]);
+	Insert_List(h, 4, f);
+
+	DispList(h);
+	Delete_List(h, 3, tp);
+
+	DispList(h);
+	Release_List(h);
+
+	return 0;
+}
